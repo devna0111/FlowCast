@@ -1,0 +1,5 @@
+model_1/
+model_1_checkpoint/
+model_2/
+LSTM최종데이터_X_Y_라벨링등전.csv
+.env

@@ -1,0 +1,17 @@
+data/
+model_1/
+model_1_checkpoint/
+model_2/
+backups/
+.ipynb_checkpoints/
+따릉이정보_25년은예측값활용필요/
+데이터전처리/
+행정인구자료/
+유동데이터체크/
+.env
+seoul_population_data.csv
+seoul_station_population_data.csv
+따릉이22년도.csv
+따릉이23년도.csv
+따릉이24년도.csv
+일시행정구총생활인구수연도월일시대여량_요일피쳐만넣으면되는자료.csv

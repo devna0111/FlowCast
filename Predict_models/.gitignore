@@ -1,0 +1,6 @@
+model_1/
+model_1_checkpoint/
+model_2/
+LSTM데이터정렬용함수.docx
+.env
+.ipynb_checkpoints/
