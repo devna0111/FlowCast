@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>PM 분배 예측</title>
+    <title>PM/Bike 수요 예측</title>
 </head>
 <body>
-<h2>행정구별 주요역 PM 분배 예측</h2>
-<form method="post">
-    <label>행정구:</label>
-    <input type="text" name="gu" required>
-    <label>날짜:</label>
-    <input type="date" name="date" required>
-    <button type="submit">예측하기</button>
-</form>
+    <h2>행정구별 수요 예측</h2>
+    <form method="post">
+        <label>행정구:</label>
+        <select name="gu" required>
+            <option value="" disabled selected>행정구를 선택하세요</option>
+            {% for gu in gu_list %}
+                <option value="{{ gu }}">{{ gu }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">예측 시작</button>
+    </form>
 </body>
 </html>

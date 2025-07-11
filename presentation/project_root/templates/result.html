@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>예측 결과</title>
-</head>
+<head><title>{{ menu }}</title></head>
 <body>
-<h2>{{ gu }} - {{ date }} 주요역 PM 분배 예측</h2>
-<div>
+    <h2>{{ menu }}</h2>
+    <p>행정구: {{ gu }}</p>
+    <p><a href="{{ url_for('select_menu', gu=gu) }}">메뉴로 돌아가기</a></p>
     {{ table|safe }}
-</div>
-<a href="/">다시 입력</a>
 </body>
 </html>

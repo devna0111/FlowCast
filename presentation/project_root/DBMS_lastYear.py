@@ -58,39 +58,61 @@ def DBMS_last_year_one_week() :
                 connection.close()
             except:
                 pass
-    if len(total_last_week) != 4800 :
-        dates = pd.date_range('2024-07-10', '2024-07-17')
-        hours = list(range(24))
-        gus = total_last_week['행정구'].unique()
-
-        multi_index = pd.MultiIndex.from_product(
-            [dates.year, dates.month, dates.day, hours, gus],
-            names=['연도', '월', '일', '시', '행정구']
-        )
-        full_df = pd.DataFrame(index=multi_index).reset_index()
-
-        merged = full_df.merge(total_last_week, on=['연도','월','일','시','행정구'], how='left', indicator=True)
-        missing_rows = merged[merged['_merge'] == 'left_only']
-        missing_rows = merged[merged['_merge'] == 'left_only']
-
-        missing_rows_unique = missing_rows.drop_duplicates(subset=['연도', '월', '일', '시', '행정구'])
-        missing_rows_unique = missing_rows_unique.drop('_merge', axis=1)
-        result = pd.concat((total_last_week,missing_rows_unique))
-        
-        result = result.sort_values(['행정구', '시', '연도', '월', '일']).reset_index(drop=True)
-
-        for col in ['총생활인구수_1년전', '대여량_1년전']:
-            result[col] = result.groupby(['행정구', '시'])[col].apply(lambda x: x.fillna(method='ffill'))
-
-        result = result.sort_values(['연도', '월', '일', '시', '행정구']).reset_index(drop=True)
-
-        result = result[['연도', '월', '일', '시', '행정구', '총생활인구수_1년전', '대여량_1년전']]
-
-        return result
-    
     return total_last_week # 일주일 치 연도, 월, 일, 시, 행정구, 총생활인구수_1년전, 대여량_1년전
 
+data = DBMS_last_year_one_week()
+
+def fill_missing_timeseries(data=data, days=8, key_cols=None, num_cols=None):
+    """
+    data: DataFrame, 기준이 되는 원본 데이터 (key_cols 모두 포함)
+    days: int, 몇 일간의 데이터를 보장할지 (기본값 8일)
+    key_cols: list, 시계열 Key가 되는 컬럼 (예: ['월','일','시','행정구'])
+    num_cols: list, 결측값 채울 대상 컬럼. None이면 모든 컬럼 채움
+
+    반환값: 누락 구간이 보간된, 중복 없는 DataFrame
+    """
+    if key_cols is None:
+        key_cols = ['월', '일', '시', '행정구']
+    if num_cols is None:
+        num_cols = [col for col in data.columns if col not in key_cols]
+    for col in key_cols:
+        data[col] = data[col].astype(str)
+    
+    # 1. 전체 조합 만들기
+    now = datetime.now().date()
+    dates = pd.date_range(now, now + timedelta(days=days-1))   # 8일
+    hours = list(range(24))
+    gus = data['행정구'].unique().tolist()
+
+    full = []
+    for dt in dates:
+        for h in hours:
+            for g in gus:
+                full.append({
+                    '월': str(dt.month),
+                    '일': str(dt.day),
+                    '시': str(h),
+                    '행정구': str(g)
+                })
+    full_df = pd.DataFrame(full)
+
+    # 2. 누락행 탐색 및 합치기
+    merged = full_df.merge(data, on=key_cols, how='left', indicator=True)
+    missing = merged[merged['_merge']=='left_only']
+    df_all = pd.concat([data, missing.drop('_merge', axis=1)], ignore_index=True)
+    df_all = df_all.sort_values(key_cols).reset_index(drop=True)
+
+    # 3. ffill, bfill 결측치 채우기 (numeric 및 object 모두 적용 가능)
+    for col in num_cols:
+        df_all[col] = df_all.groupby(['행정구', '시'])[col].ffill()
+        df_all[col] = df_all.groupby(['행정구', '시'])[col].bfill()
+
+    # 4. 중복제거 및 정렬
+    df_all = df_all.drop_duplicates(subset=key_cols, keep='first')
+    df_all = df_all.sort_values(key_cols).reset_index(drop=True)
+    return df_all
+
 if __name__ == "__main__" :
-    data = DBMS_last_year_one_week()
-    print(data)
-    print(len(data))
+    test = fill_missing_timeseries()
+    print(test)
+    print(len(test))

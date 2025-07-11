@@ -5,18 +5,19 @@ import holidays
 import tensorflow as tf
 from datetime import datetime, timedelta
 from weather import get_hourly_weather_seoul_openmeteo
-from DBMS_lastYear import DBMS_last_year_one_week
+from DBMS_lastYear import DBMS_last_year_one_week,fill_missing_timeseries
 import matplotlib.pyplot as plt
+import os
 plt.rc('font', family = "Malgun Gothic")
 
 weather = get_hourly_weather_seoul_openmeteo()
-lastyear_data = DBMS_last_year_one_week()
-le = joblib.load('C:/Users/Admin/OneDrive/Desktop/FlowCast/FlowCast/Predict_models/M2/ENCODER_SCALER/labelencoders.pkl')
-scaler = joblib.load('C:/Users/Admin/OneDrive/Desktop/FlowCast/FlowCast/Predict_models/M2/ENCODER_SCALER/scaler.pkl')
-feature_cols = joblib.load('C:/Users/Admin/OneDrive/Desktop/FlowCast/FlowCast/Predict_models/M2/ENCODER_SCALER/featurecols.pkl')
-num_cols = joblib.load('C:/Users/Admin/OneDrive/Desktop/FlowCast/FlowCast/Predict_models/M2/ENCODER_SCALER/numcols.pkl')
-model = tf.keras.models.load_model("C:/Users/Admin/OneDrive/Desktop/FlowCast/FlowCast/Predict_models/M2/best_dnn_model_lr.h5")
-gu_weight = pd.read_csv(r"C:\Users\Admin\OneDrive\Desktop\FlowCast\FlowCast\Data_Preprocessing\행정구별자전거대여량비중\행정구top5자전거대여량비중.csv")
+lastyear_data = fill_missing_timeseries()
+le = joblib.load('../../Predict_models/M2/ENCODER_SCALER/labelencoders.pkl')
+scaler = joblib.load('../../Predict_models/M2/ENCODER_SCALER/scaler.pkl')
+feature_cols = joblib.load('../../Predict_models/M2/ENCODER_SCALER/featurecols.pkl')
+num_cols = joblib.load('../../Predict_models/M2/ENCODER_SCALER/numcols.pkl')
+model = tf.keras.models.load_model("../../Predict_models/M2/best_dnn_model_lr.h5")
+gu_weight = pd.read_csv(r"../../Data_Preprocessing/행정구별자전거대여량비중/행정구top5자전거대여량비중.csv")
 
 def predict_bike_demand():
     """
@@ -27,9 +28,9 @@ def predict_bike_demand():
     weather_df = weather
     weather_df['일시'] = pd.to_datetime(weather_df['일시'])
     # weather_df['연도'] = weather_df['일시'].dt.year
-    weather_df['월'] = weather_df['일시'].dt.month
-    weather_df['일'] = weather_df['일시'].dt.day
-    weather_df['시'] = weather_df['일시'].dt.hour
+    weather_df['월'] = weather_df['일시'].dt.month.astype(str)
+    weather_df['일'] = weather_df['일시'].dt.day.astype(str)
+    weather_df['시'] = weather_df['일시'].dt.hour.astype(str)
 
     df_total = weather_df.merge(df_1y, on=['행정구','월','일','시'])
     
@@ -67,10 +68,6 @@ def result_df_return(datas=datas) :
 
     df_long = df.stack(level=[0, 1]).reset_index()
     df_long.columns = ['행정구', '날짜', '시', '예측값']
-    df_long['일시'] = pd.to_datetime(df_long['날짜'].astype(str) + ' ' + df_long['시'].astype(str) + ':00:00')
-    df_long['연도'] = df_long['일시'].dt.year
-    df_long['월'] = df_long['일시'].dt.month
-    df_long['일'] = df_long['일시'].dt.day
 #     print(df_long.head())
 #     print(df_long.shape)  # (3600, 4) => 현재는 7일치로, 4200,4
     return df_long
@@ -88,7 +85,6 @@ def check_station_top_five(gu) :
 #     selected_gu = gu_weight[gu_weight['gu']==gu][['station','weight']] 
     result_pred = need_pred[need_pred['날짜']==now]
     result = []
-
     for _, row in result_pred.iterrows():
         for _, srow in weight_stations.iterrows():
             result.append({
@@ -102,7 +98,7 @@ def check_station_top_five(gu) :
     df_station = pd.DataFrame(result)
     station_list = df_station['station'].unique().tolist()
     
-    for station in station_list:
+    for i,station in enumerate(station_list):
         data = df_station[df_station['station']==station]
         plt.figure(figsize=(12, 6))  # 크기 조정
 
@@ -129,12 +125,57 @@ def check_station_top_five(gu) :
         plt.grid(True, alpha=0.3)
         plt.legend()
         plt.tight_layout()
-        plt.savefig(fname = f'project_root/static/{station}_result.png', dpi=200, bbox_inches='tight')
+        plt.savefig(fname = f'static/{i}_result.png', dpi=200, bbox_inches='tight')
 
-    return df_station
+    return station_list
+
+def save_all_station_top_five():
+    '''모든 행정구의 top5 역 그래프 이미지를 static 폴더에 저장'''
+    gu_list = gu_weight['gu'].unique()
+    for gu in gu_list:
+        gu_weight['weight'] = gu_weight['weight'] / 100
+        weight_stations = gu_weight[gu_weight['gu'] == gu]
+        now = datetime.now().date()
+        pred = df
+        need_pred = pred[pred['행정구'] == gu]
+        result_pred = need_pred[need_pred['날짜'] == now]
+        result = []
+        for _, row in result_pred.iterrows():
+            for _, srow in weight_stations.iterrows():
+                result.append({
+                    '날짜': row['날짜'],
+                    '시': row['시'],
+                    '행정구': row['행정구'],
+                    'station': srow['station'],
+                    '예상대여량': round(row['예측값'] * srow['weight'], 2)
+                })
+
+        df_station = pd.DataFrame(result)
+        station_list = df_station['station'].unique().tolist()
+        
+        for i, station in enumerate(station_list):
+            data = df_station[df_station['station'] == station]
+            plt.figure(figsize=(12, 6))
+            plt.bar(data['시'], data['예상대여량'], color='skyblue', alpha=0.7, label='대여량(예측)')
+            plt.plot(data['시'], data['예상대여량'], c='red', lw=3, marker='o', markersize=8, label='추이')
+            plt.xticks([i for i in range(24)], [f'{i}시' for i in range(24)], fontsize=11, rotation=0)
+            plt.xlabel('시간(시)', fontsize=14, fontweight='bold')
+            plt.ylabel('예상 대여량', fontsize=14, fontweight='bold')
+            plt.ylim(0, data['예상대여량'].max() * 1.15)
+            max_idx = data['예상대여량'].idxmax()
+            max_x = data.loc[max_idx, '시']
+            max_y = data.loc[max_idx, '예상대여량']
+            plt.annotate(f'{max_y:,.0f}', (max_x, max_y), textcoords="offset points", xytext=(0,10), ha='center', fontsize=11, color='red', fontweight='bold')
+            plt.title(f'{gu} {station}', fontsize=18, fontweight='bold')
+            plt.grid(True, alpha=0.3)
+            plt.legend()
+            plt.tight_layout()
+            # 파일명에 행정구와 역명(혹은 index)까지 포함시키기
+            os.makedirs('static', exist_ok=True)
+            plt.savefig(fname = f'static/{gu}_{station}.png', dpi=200, bbox_inches='tight')
+            plt.close()
+
 
 if __name__ == "__main__" :
     print(result_df_return())
-    # check_station_top_five("강서구")
-
-
+    save_all_station_top_five()
