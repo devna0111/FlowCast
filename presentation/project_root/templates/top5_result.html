@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>대표역 5개 수요 예측</title>
+</head>
+<body>
+<h2>{{ gu }} 대표역 5개 시간대별 예측</h2>
+<div>
+    {{ table|safe }}
+</div>
+<h3>시간대별 예측 그래프</h3>
+{% for img in img_list %}
+    <div>
+        <img src="{{ url_for('static', filename=img) }}" style="width:480px;">
+    </div>
+{% endfor %}
+<a href="/top5">다시 입력</a>
+</body>
+</html>

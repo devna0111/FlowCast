@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>행정구별 대표역 5개 예측</title>
+</head>
+<body>
+<h2>행정구별 대표역 5개 공공자전거 예상 수요량</h2>
+<form method="post">
+    <label>행정구:</label>
+    <select name="gu" required>
+        <option value="" disabled selected>행정구를 선택하세요</option>
+        {% for x in gu_list %}
+            <option value="{{ x }}" {% if gu==x %}selected{% endif %}>{{ x }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">예측 보기</button>
+</form>
+
+{% if gu and img_list %}
+    <h3>{{ gu }} 대표역 5개 그래프</h3>
+    {% for img in img_list %}
+        <div style="margin-bottom:20px;">
+            <img src="{{ url_for('static', filename=img) }}" style="width:480px;">
+            <div style="text-align:center;">{{ img }}</div>
+        </div>
+    {% endfor %}
+{% elif gu %}
+    <p>해당 행정구의 이미지가 없습니다.</p>
+{% endif %}
+</body>
+</html>
