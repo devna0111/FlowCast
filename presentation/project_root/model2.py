@@ -65,7 +65,7 @@ def get_commute_time(hour):
 
 def class_to_range(pred_class):
     ''' 모델 예측 결과를 범주형 결과로 반환하는 함수 '''
-    labels = ['공급과다', '공급다소부족', '공급부족', '공급절대부족', '공급평균']
+    labels = ['0대~9대', '24대~38대', '38대~65대', '65대~', '10대~24대']
     pred_class = int(pred_class)
     return labels[pred_class]
 
