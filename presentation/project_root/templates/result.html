@@ -1,10 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head><title>{{ menu }}</title></head>
+<head>
+    <title>PM/Bike 수요 예측</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .winky-rough {
+        font-family: "Winky Rough", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 450;
+        font-style: normal;
+        }
+        content{background-color: #CED4DA;} 
+        h2 {padding-top: 150px; color: #001100; font-size: 50pt; font-weight:bolder; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;}
+        h2.zero_padding {margin: 0 auto;padding: 0; font-size:3em}
+        label {color:#001100 ; font-size: 25pt;padding-right: 10px;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;}
+        body {height: 800px;}
+        figure {height: 100%;}
+        footer {height: 150px; text-align: center; background-color: #001100;color: whitesmoke;font-size: 15pt;padding-top: 20px;}
+        form {margin-bottom: 0;}
+        select {height: 30pt; width: 400px;margin-bottom: 50px;}
+        div {margin: 0 auto; text-align: center;justify-content: center;} 
+        button {margin-right: 12px;}
+        content{justify-content: center;}
+        content a {clear: both;display: block;}
+    </style>
+</head>
 <body>
-    <h2>{{ menu }}</h2>
-    <p>행정구: {{ gu }}</p>
-    <p><a href="{{ url_for('select_menu', gu=gu) }}">메뉴로 돌아가기</a></p>
-    {{ table|safe }}
+    <div class=wrap>
+    <div class="p-3 mb-2 bg-dark-subtle text-dark-emphasis">
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <p class="text-white bg-dark"><center><font size=15 color = "white"><span class="winky-rough">FlowCast</span></font></center></p>
+    </nav>
+    </div>
+    <content>
+        <figure class="text-center">
+            <h3>{{ menu }}</h3>
+            <p>행정구: {{ gu }} | {{date}}</p>
+            {% if img_data %}
+                <img src="data:image/png;base64,{{ img_data }}" alt="예측 그래프" style="max-width:700px;">
+            {% endif %}
+            <a href="/">메뉴로 돌아가기</a>
+        </figure>
+    </content>
+    <footer>
+        <figure class="text-center">
+        <div class="shopping_info">FlowCast</div>   
+        <div class="office_address">www.devna0111@gmail.com</div>
+        <div class="copyright">copyright ⓒ FlowCast co.,Ltd All rights reserved</div>
+        </figure>
+    </footer>
+    </div>
+    </wrap>
 </body>
 </html>

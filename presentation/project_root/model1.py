@@ -131,9 +131,9 @@ def check_station_top_five(gu) :
 
 def save_all_station_top_five():
     '''모든 행정구의 top5 역 그래프 이미지를 static 폴더에 저장'''
+    gu_weight['weight'] = gu_weight['weight'] / 100
     gu_list = gu_weight['gu'].unique()
     for gu in gu_list:
-        gu_weight['weight'] = gu_weight['weight'] / 100
         weight_stations = gu_weight[gu_weight['gu'] == gu]
         now = datetime.now().date()
         pred = df
