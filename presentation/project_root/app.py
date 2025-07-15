@@ -6,6 +6,8 @@ from model1 import save_all_station_top_five
 import warnings
 import joblib
 import os
+import matplotlib
+matplotlib.use('Agg')  # 파일 저장 전용 백엔드
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -69,9 +71,6 @@ def pm_result():
     max_x = df.loc[max_idx, '시']
     max_y = df.loc[max_idx, '예상수']
     # 추세선
-    import numpy as np
-    z = np.polyfit(df['시'], df['예상수'], 1)
-    p = np.poly1d(z)
     Q1 = 9; Q2 =24 ; Q3 = 38
     colors = []
     for y in df['예상수']:
@@ -94,7 +93,6 @@ def pm_result():
                 textcoords="offset points", xytext=(0,10), ha='center',
                 fontsize=11, color='darkorange', fontweight='bold')
     # 추세선
-    plt.plot(df['시'], p(df['시']), color='blue', linestyle=':', linewidth=2, label='추세선')
     plt.xticks(df['시'])
     plt.xlabel('시')
     plt.ylabel('PM 대수 (중앙값)')
@@ -107,9 +105,6 @@ def pm_result():
     img_base64 = base64.b64encode(img_io.getvalue()).decode()
     plt.close()
     return render_template('result.html', gu=gu, date=date, img_data=img_base64)
-
-
-
 
 @app.route('/bike_result')
 def bike_result():
@@ -141,23 +136,17 @@ def bike_result():
     max_x = df.loc[max_idx, '시']
     max_y = df.loc[max_idx, '예측값']
 
-    # 추세선
-    import numpy as np
-    z = np.polyfit(df['시'], df['예측값'], 1)
-    p = np.poly1d(z)
-
     plt.figure(figsize=(18,12))
     plt.bar(df['시'], df['예측값'], color=colors, alpha=0.8)
     plt.axhline(Q1, color='orange', linestyle='--', linewidth=2, label='초과 공급 상황')
     plt.axhline(Q2, color='green', linestyle='-', linewidth=2, label='적정 수준')
     plt.axhline(Q3, color='red', linestyle='-.', linewidth=2, label='즉시 공급 필요')
     # 최대값 점과 주석
-    plt.scatter([max_x], [max_y], color='darkorange', s=120, zorder=5, label='최대값')
+    plt.scatter([max_x], [max_y], color='darkorange', s=120, zorder=5)
     plt.annotate(f"{int(max_y)}", (max_x, max_y),
                 textcoords="offset points", xytext=(0,10), ha='center',
                 fontsize=11, color='darkorange', fontweight='bold')
     # 추세선(선형회귀)
-    plt.plot(df['시'], p(df['시']), color='blue', linestyle=':', linewidth=2, label='추세선')
     plt.xticks(df['시'])
     plt.xlabel('시')
     plt.ylabel('예상 대여량')
