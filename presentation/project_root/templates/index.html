@@ -1,58 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>PM/Bike 수요 예측</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Winky+Rough:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <style>        
-        .winky-rough {
-            font-family: "Winky Rough", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 450;
-            font-style: normal;
-        }
-        content{background-color: #CED4DA;}
-        wrap {width:1000px;margin:0 auto;}
-        h2 {padding-top: 150px; color: #001100; font-size: 50pt; font-weight:bolder; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;}
-        h2.zero_padding {margin: 0 auto;padding: 0; font-size:3em}
-        label {color:#001100 ; font-size: 25pt;padding-right: 10px;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;}
-        body {height: 800px;}
-        figure {height: 100%;}
-        footer {height: 150px; text-align: center; background-color: #001100;color: whitesmoke;font-size: 15pt;padding-top: 20px;}
-        form {margin-bottom: 0;}
-        select {height: 30pt; width: 400px;margin-bottom: 20px;}
-        input[type="date"] {width: 250px; font-size:20px; margin-bottom: 50px;}
-        div {margin: 0 auto; text-align: center;justify-content: center;} 
-        button {margin-right: 12px;}
-    </style>
-</head>
+{% extends 'base.html' %}
+{%block title%}FlowCast{%endblock%}
+{%block content%}
 <body>
-    <wrap>
-    <div class="p-3 mb-2 bg-dark-subtle text-dark-emphasis">
-    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-        <p class="text-white bg-dark"><center><font size=15 color="white"><span class="winky-rough">FlowCast</span></font></center></p>
-    </nav>
-    <content>
-        <figure class="text-center">
-        <h2>행정구별 수요 예측</h2>
+    <div class="content">
+        <img src="{{ url_for('static', filename='FlowCast.png') }}" style="display: block; margin: 0 auto; width: 300px; height: 300px;",alt="FlowCast_Logo">
+        <h2 class="display-6">서울의 흐름을 예측하다, <span name="logo">FlowCast</span></h2>
+        <p class="text-muted">행정구별 PM 수요를 데이터로 분석합니다.</p>
+        <div class="gu">
         <form id="guForm" method="get">
-            <select id="guSelect" name="gu" required>
+            <select id="guSelect" name="gu" required class="custom-input">
                 <option value="" disabled selected>행정구를 선택하세요</option>
                 {% for gu in gu_list %}
                     <option value="{{ gu }}">{{ gu }}</option>
                 {% endfor %}
             </select>
-            <br>
-            <input type="date" id="dateSelect" name="date" required>
+        </form>
+        </div>
+        <div class="date">
+            <input type="date" id="dateSelect" name="date" required class="custom-input">
+        </div>
             <div class="d-flex gap-3 justify-content-center mt-4">
-                <button type="button" class="btn btn-light" onclick="gotoResult('bike_result')">공공자전거 수요 예측</button>
-                <button type="button" class="btn btn-light" onclick="gotoResult('pm_result')">PM 수요 예측</button>
-                <button type="button" class="btn btn-light" onclick="gotoResult('top5')">대표역 5곳 결과</button>
+                <button type="button" class="btn btn-light custom-button" onclick="gotoResult('bike_result')">공공자전거 수요 예측</button>
+                <button type="button" class="btn btn-light custom-button" onclick="gotoResult('pm_result')">PM 수요 예측</button>
+                <button type="button" class="btn btn-light custom-button" onclick="gotoResult('top5')">오늘의 대표역 5곳 결과</button>
             </div>
         </form>
-        </figure>
         <script>
             // 날짜 제한: 오늘 ~ 7일 후
             window.onload = function() {
@@ -83,15 +55,6 @@
                 window.location.href = `/${type}?gu=${encodeURIComponent(gu)}&date=${encodeURIComponent(date)}`;
             }
         </script>
-    </content>
-    <footer>
-        <figure class="text-center">
-        <div class="shopping_info">FlowCast</div>   
-        <div class="office_address">www.devna0111@gmail.com</div>
-        <div class="copyright">copyright ⓒ FlowCast co.,Ltd All rights reserved</div>
-        </figure>
-    </footer>
     </div>
-    </wrap>
 </body>
-</html>
+{%endblock%}

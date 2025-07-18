@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    {%include 'header.html'%}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- 구 브라우저의 경우 .ico 파일을 지정해야 함-->
+    <link href="{{ url_for('static', filename='FlowCast.png') }}" rel="icon"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+    *{ font-family: 'Noto Sans KR', sans-serif; }
+    div.content{justify-content: center; text-align: center;}
+    span#logo{font-weight: 600;}
+    h2{font-weight: bold;}
+    h2.zero_padding {margin: 0 auto;padding: 0; font-size:3em}
+    h3{font-weight: bold;}
+    label {color:#001100 ; font-size: 25pt;padding-right: 10px;text-align: center;}
+    body {height: 1000px;}
+    figure {height: 100%;}
+    form {margin-bottom: 0;}
+    select {height: 30pt; width: 400px;margin-bottom: 20px;}
+    input[type="date"] {width: 250px; font-size:20px; margin-bottom: 50px;}
+    div {margin: 0 auto; text-align: center;justify-content: center;} 
+    button {margin-right: 12px;}
+    a.back-link{display: block;text-decoration:none;color:black;}
+    a.back-link:hover {color: blue;font-weight: bold;}
+    div.img {justify-content: center; text-align: center; width:49%;}
+    div.img p {width: 100%;text-align: center;font-size: 25px; text-align: center;}
+    div.gptment{justify-content: center; text-align: center}
+    div.gu {margin-bottom: 30px;}
+    select{margin:0}
+    div.home{justify-content: center; text-align: center;}
+    /* 공통 입력 UI 스타일 */
+    .custom-input {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    transition: box-shadow 0.2s ease-in-out;
+    width: 50%;
+    padding: 4px;
+    }
+
+    /* 포커스 시 더 진한 그림자 */
+    .custom-input:focus {
+    outline: none;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    }
+
+    /* 버튼도 둥글게 정리하고 싶다면 */
+    .custom-button {
+    border-radius: 10px;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+    <title>{%block title%}{%endblock%}</title>
+    {%block content%}{%endblock%}
+    </a>
+    {%include 'footer.html'%}
+</head>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" rel="stylesheet" /></script>
