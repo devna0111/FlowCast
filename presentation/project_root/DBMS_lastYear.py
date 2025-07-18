@@ -113,6 +113,8 @@ def fill_missing_timeseries(data=data, days=8, key_cols=None, num_cols=None):
     return df_all
 
 if __name__ == "__main__" :
+    df = DBMS_last_year_one_week()
     test = fill_missing_timeseries()
+    print(df)
     print(test)
     print(len(test))
