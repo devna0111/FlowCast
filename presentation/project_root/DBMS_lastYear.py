@@ -53,6 +53,7 @@ def DBMS_last_year_one_week() :
                 total_last_week = pd.concat([total_last_week, using_data],axis=0)
         except Exception as e:
             print('에러 발생:', e)
+            total_last_week = pd.read_csv("M1_data.csv")
         finally:
             try:
                 connection.close()

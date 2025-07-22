@@ -4,8 +4,6 @@ from flask import Flask, render_template, request
 from model_utils import weather, lastyear_data, model1_result, model2_result
 from model1 import save_all_station_top_five
 import warnings
-import dotenv
-import openai
 import joblib
 import os
 import matplotlib
@@ -13,6 +11,7 @@ matplotlib.use('Agg')  # 파일 저장 전용 백엔드
 import matplotlib.pyplot as plt
 import io
 import base64
+from gpt_function import summarize_df_with_gpt_model1, summarize_df_with_gpt_model2
 
 plt.rc('font', family="Malgun Gothic")
 plt.rc('font', size=30)  # 전체 폰트 크기
@@ -24,7 +23,6 @@ plt.rc('ytick', labelsize=22)   # y축 눈금 폰트 크기
 warnings.filterwarnings('ignore')
 global_gu_list = joblib.load("../../Predict_models/M2/M2_ENCODER/서울전역행정구리스트.pkl")
 global_pm_gu_list =joblib.load("../../Predict_models/M2/M2_ENCODER/PM활용행정구리스트.pkl")
-dotenv.load_dotenv()
 model1_result = model1_result
 model2_result = model2_result
 save_all_station_top_five()
@@ -33,27 +31,6 @@ save_all_station_top_five()
 # model2_result = pd.DataFrame({'행정구': ['강남구', '강서구'], 'PM수요': [78, 99]})
 
 app = Flask(__name__)
-def summarize_df_with_gpt(df, context="PM 수요 예측"):
-    """
-    DataFrame을 GPT에 전달해 요약 분석 반환
-    """
-    table = df.describe()
-    # table = df_short.to_markdown(index=False)
-    client = openai.OpenAI()
-    prompt = f"""
-                다음은 {context} 결과 데이터입니다.
-                표를 읽고 최대값, 특이점, 최대값 등의 해석을 간단하게 요약해주세요.{table}
-                """
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4.1-nano",  # 또는 gpt-4o
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"데이터를 확인하세요. {e}"
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -122,7 +99,7 @@ def pm_result():
     img_base64 = base64.b64encode(img_io.getvalue()).decode()
     plt.close()
 
-    summary_text = summarize_df_with_gpt(df, context="PM 수요 예측")
+    summary_text = summarize_df_with_gpt_model2(df, model2_result, context="PM 수요 예측")
     return render_template('result.html', gu=gu, date=date, img_data=img_base64, text=summary_text)
 
 @app.route('/bike_result')
@@ -178,7 +155,7 @@ def bike_result():
     img_base64 = base64.b64encode(img_io.getvalue()).decode()
     plt.close()
 
-    summary_text = summarize_df_with_gpt(df, context="공공자전거 수요 예측")
+    summary_text = summarize_df_with_gpt_model1(df,model1_result, context="공공자전거 수요 예측")
 
     return render_template(
         'result.html',
@@ -201,4 +178,4 @@ def top5():
     return render_template('top5.html',  gu=gu, img_list=img_list)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
