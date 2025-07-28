@@ -75,3 +75,5 @@ LSTM, LightGBM, DNN 등 다양한 예측 모델을 구현하여 최적의 성능
 - M2 : 공공자건거의 수요와 PM의 견인횟수, PM배치 가상데이터를 통해 내일의 PM 수요를 예측하여 배치할 수 있도록 기여합니다.
 <br>
 <br>
+### ✅ 포트폴리오 요약
+<img width="4281" height="1700" alt="Image" src="https://github.com/user-attachments/assets/16741ee8-b04b-4dd3-9a3c-27e6e14df5fb" />
