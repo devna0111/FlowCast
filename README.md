@@ -1,4 +1,4 @@
-![FlowCast Logo](images/FlowCastlong.png)
+![FlowCast Logo](images/FlowCast_high.png)
 ---
 # 🚲 서울 PM(Personal Mobility) 공급 계획 프로젝트
 
