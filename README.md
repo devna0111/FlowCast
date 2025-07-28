@@ -1,5 +1,6 @@
 <img src="images/FlowCast_high.png" alt="FlowCast Logo" width="200"/>
 ---
+
 # 🚲 서울 PM(Personal Mobility) 공급 계획 프로젝트
 
 서울시의 퍼스널 모빌리티(PM) 공급 최적화를 위한 데이터 분석 및 예측 모델링 프로젝트입니다.
